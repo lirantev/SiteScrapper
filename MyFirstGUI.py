@@ -16,21 +16,22 @@ def scapper():
 	text.config(state=NORMAL)
 	text.delete(1.0,END)
 	inputUrl = url.get()
-	page = requests.get(inputUrl, verify=False)
-	tree = html.fromstring(page.content)
-	#images = tree.xpath('//img/@src')
-	links = tree.xpath('//a/@href')
-	if len(links) == 0:
-		#print("no links found")
-		text.insert(INSERT,'No links found')
-	else:
-		newlinks = list(set(links))
-		newlinks.sort()
-		for x in newlinks:
-			#answer.config(text=x)
-			scrap += x + "\n"
-	text.insert(INSERT,scrap)
-	text.config(state=DISABLED)
+	try:
+		page = requests.get(inputUrl, verify=False)	
+		tree = html.fromstring(page.content)
+		#images = tree.xpath('//img/@src')
+		links = tree.xpath('//a/@href')
+		if len(links) == 0:
+			text.insert(INSERT,'No links found')
+		else:
+			newlinks = list(set(links))
+			newlinks.sort()
+			for x in newlinks:
+				scrap += x + "\n"
+		text.insert(INSERT,scrap)
+		text.config(state=DISABLED)
+	except requests.exceptions.MissingSchema as e:
+		text.insert(INSERT,e)
 
 root = Tk()
 #root.geometry("800x600")
